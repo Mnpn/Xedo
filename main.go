@@ -39,7 +39,7 @@ func main() {
 }
 
 func printhelp() {
-	fmt.Println(name+" "+version+" by Martin Persson <mnpn03@gmail.com>")
+	fmt.Println(name+" ("+version+"), the todo list manager by Martin Persson <mnpn03@gmail.com>")
 	fmt.Println("USAGE:")
 }
 
