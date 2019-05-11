@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
+	"github.com/jD91mZM2/gtable"
 	"github.com/jD91mZM2/stdutil"
 )
 
@@ -14,9 +16,23 @@ const version = "0.1.0"
 func main() {
 	cmd := os.Args
 
+	// If no argument was provided, check if
+	// a list exists and display it.
 	if len(cmd) == 1 {
-		printhelp()
-		os.Exit(0)
+		fmt.Println("Your Xedo list:")
+		testarr := []string{"think", "thonk", "thank"}
+		table := gtable.NewStringTable()
+		table.AddStrings("ID", "Title", "Description")
+
+		i := 1
+		for _, thing := range testarr {
+			table.AddRow()
+			table.AddStrings(strconv.Itoa(i), thing+" name", thing+" desc")
+			i+=1
+		}
+
+		fmt.Println(table.String())
+		return
 	}
 
 	args := cmd[2:]
@@ -35,6 +51,26 @@ func main() {
 			return
 		}
 		fmt.Println("Something worked!")
+	case "rename":
+		if nargs < 2 {
+			argerr("rename <id> <new title>")
+			return
+		}
+		id := args[0]
+		newtitle := strings.Join(args[1:], " ")
+		fmt.Println(id)
+		fmt.Println(newtitle)
+	case "renamedesc":
+		if nargs < 2 {
+			argerr("renamedesc <id> <new description>")
+			return
+		}
+		id := args[0]
+		newdesc := strings.Join(args[1:], " ")
+		fmt.Println(id)
+		fmt.Println(newdesc)
+	case "help":
+		printhelp()
 	default:
 		fmt.Println("Unknown argument.\n")
 		printhelp()
@@ -58,5 +94,5 @@ func printhelp() {
 }
 
 func argerr(cmderr string) {
-	stdutil.PrintErr("Invalid arguments. Usage: `"+name+" "+cmderr+"`.", nil)
+	stdutil.PrintErr("Invalid arguments. Usage: `"+strings.ToLower(name)+" "+cmderr+"`.", nil)
 }
