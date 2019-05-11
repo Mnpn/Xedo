@@ -2,19 +2,32 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
+	"os"
 
 	"github.com/jD91mZM2/gtable"
 	"github.com/jD91mZM2/stdutil"
+	"github.com/OpenPeeDeeP/xdg"
 )
 
 const name = "Xedo"
 const version = "0.1.0"
 
+var xdgDir = xdg.New("Mnpn", name)
+var dataFile = xdgDir.DataHome()+"/list.json"
+
 func main() {
 	cmd := os.Args
+
+	// If the JSON file doesn't exist
+	if _, err := os.Stat(dataFile); os.IsNotExist(err) {
+		err := os.MkdirAll(xdgDir.DataHome(), 0744) // Needs rwx (7) or else it errors
+		if err != nil {
+			stdutil.PrintErr("Directory creation failed", err)
+			return
+		}
+	}
 
 	// If no argument was provided, check if
 	// a list exists and display it.
