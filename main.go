@@ -13,8 +13,9 @@ import (
 
 const name = "Xedo"
 const version = "0.1.0"
+const author = "Mnpn"
 
-var xdgDir = xdg.New("Mnpn", name)
+var xdgDir = xdg.New(author, name)
 var dataFile = xdgDir.DataHome()+"/list.json"
 
 func main() {
@@ -22,7 +23,7 @@ func main() {
 
 	// If the JSON file doesn't exist
 	if _, err := os.Stat(dataFile); os.IsNotExist(err) {
-		err := os.MkdirAll(xdgDir.DataHome(), 0744) // Needs rwx (7) or else it errors
+		err := os.MkdirAll(xdgDir.DataHome(), 0755) // Needs rwx (7) or else it errors
 		if err != nil {
 			stdutil.PrintErr("Directory creation failed", err)
 			return
