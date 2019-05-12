@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"strconv"
 	"strings"
 	"os"
@@ -10,6 +12,14 @@ import (
 	"github.com/jD91mZM2/stdutil"
 	"github.com/OpenPeeDeeP/xdg"
 )
+
+type ListItem struct {
+    Title string
+    Description string
+}
+
+var output []ListItem;
+
 
 const name = "Xedo"
 const version = "0.1.0"
@@ -21,31 +31,46 @@ var dataFile = xdgDir.DataHome()+"/list.json"
 func main() {
 	cmd := os.Args
 
-	// If the JSON file doesn't exist
+	// If the folder doesn't exist
 	if _, err := os.Stat(dataFile); os.IsNotExist(err) {
-		err := os.MkdirAll(xdgDir.DataHome(), 0755) // Needs rwx (7) or else it errors
-		if err != nil {
-			stdutil.PrintErr("Directory creation failed", err)
+		// Make the folder
+		derr := os.MkdirAll(xdgDir.DataHome(), 0755) // Needs rwx (7) or else it errors
+		if derr != nil { // It failed
+			stdutil.PrintErr("Directory creation failed", derr)
 			return
 		}
+
+		// Make the file
+		cfile, ferr := os.Create(dataFile)
+		if ferr != nil { // It failed
+			stdutil.PrintErr("File creation failed", ferr)
+			return
+		}
+
+		// Add basic stuff to the file
+		_, werr := cfile.Write([]byte("[]"))
+		if werr != nil { // It failed
+			stdutil.PrintErr("Failed to write to file", werr)
+		}
+	}
+
+	// Read the contents of the file
+	data, err := ioutil.ReadFile(dataFile)
+	if err != nil { // It failed
+		stdutil.PrintErr("Error opening list", err)
+		return
+	}
+
+	dataerr := json.Unmarshal([]byte(data), &output)
+	if dataerr != nil {
+		stdutil.PrintErr("Failed to unmarshal", dataerr)
+		return
 	}
 
 	// If no argument was provided, check if
 	// a list exists and display it.
 	if len(cmd) == 1 {
-		fmt.Println("Your Xedo list:")
-		testarr := []string{"think", "thonk", "thank"}
-		table := gtable.NewStringTable()
-		table.AddStrings("ID", "Title", "Description")
-
-		i := 1
-		for _, thing := range testarr {
-			table.AddRow()
-			table.AddStrings(strconv.Itoa(i), thing+" name", thing+" desc")
-			i+=1
-		}
-
-		fmt.Println(table.String())
+		printList([]string{"test", "of", "my", "thing"}, []string{"how", "nice", "this", "is"})
 		return
 	}
 
@@ -55,19 +80,43 @@ func main() {
 	switch cmd[1] {
 	case "add":
 		if nargs < 1 {
-			argerr("add \"<title>\" \"[description]\"")
+			argErr("add \"<title>\" \"[description]\"")
 			return
 		}
-		fmt.Println("Something worked!")
+
+		if nargs > 2 {
+			fmt.Println("Pro tip! Use \"quotes\" to have several words.\nExample: `"+
+			strings.ToLower(name)+" add \"long title\" \"long description\"`.")
+		}
+
+		d := ""
+		if len(args) > 1 { d = args[1] }
+		output = append(output, ListItem{args[0], d})
+
+		listdata, err := json.Marshal(output)
+		if err != nil {
+			stdutil.PrintErr("Failed to marshal", err)
+			return
+		}
+
+		// Add add new item to the file
+		jfile, _ := os.Create(dataFile)
+		_, werr := jfile.Write(listdata)
+		if werr != nil { // It failed
+			stdutil.PrintErr("Failed to write to file", werr)
+			return
+		}
+
+		printList([]string{"test", "of", "my", "thing"}, []string{"how", "nice", "this", "is"})
 	case "remove":
 		if nargs != 1 {
-			argerr("remove <id>")
+			argErr("remove <id>")
 			return
 		}
 		fmt.Println("Something worked!")
 	case "rename":
 		if nargs < 2 {
-			argerr("rename <id> <new title>")
+			argErr("rename <id> <new title>")
 			return
 		}
 		id := args[0]
@@ -76,7 +125,7 @@ func main() {
 		fmt.Println(newtitle)
 	case "renamedesc":
 		if nargs < 2 {
-			argerr("renamedesc <id> <new description>")
+			argErr("renamedesc <id> <new description>")
 			return
 		}
 		id := args[0]
@@ -84,16 +133,28 @@ func main() {
 		fmt.Println(id)
 		fmt.Println(newdesc)
 	case "help":
-		printhelp()
+		printHelp()
 	default:
 		fmt.Println("Unknown argument.\n")
-		printhelp()
+		printHelp()
 	}
-
-	os.Exit(0)
 }
 
-func printhelp() {
+func printList(titles []string, descriptions []string) {
+	fmt.Println("Your Xedo list:")
+	table := gtable.NewStringTable()
+	table.AddStrings("ID", "Title", "Description")
+
+	for i, _ := range titles {
+		table.AddRow()
+		table.AddStrings(strconv.Itoa(i+1), titles[i], descriptions[i])
+	}
+
+	fmt.Println(table.String())
+	return
+}
+
+func printHelp() {
 	fmt.Println(name+" ("+version+"), the todo list manager by Martin Persson <mnpn03@gmail.com>")
 	help := make([]string, 0)
 	help = append(help, "USAGE:")
@@ -107,6 +168,6 @@ func printhelp() {
 	fmt.Println(strings.Join(help, "\n"))
 }
 
-func argerr(cmderr string) {
+func argErr(cmderr string) {
 	stdutil.PrintErr("Invalid arguments. Usage: `"+strings.ToLower(name)+" "+cmderr+"`.", nil)
 }
