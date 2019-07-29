@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -35,28 +36,28 @@ func main() {
 	if _, err := os.Stat(dataFile); os.IsNotExist(err) {
 		// Make the folder
 		derr := os.MkdirAll(xdgDir.DataHome(), 0755) // Needs rwx (7) or else it errors
-		if derr != nil { // It failed
+		if derr != nil {
 			stdutil.PrintErr("Directory creation failed", derr)
 			return
 		}
 
 		// Make the file
 		cfile, ferr := os.Create(dataFile)
-		if ferr != nil { // It failed
+		if ferr != nil {
 			stdutil.PrintErr("File creation failed", ferr)
 			return
 		}
 
 		// Add basic stuff to the file
 		_, werr := cfile.Write([]byte("[]"))
-		if werr != nil { // It failed
+		if werr != nil {
 			stdutil.PrintErr("Failed to write to file", werr)
 		}
 	}
 
 	// Read the contents of the file
 	data, err := ioutil.ReadFile(dataFile)
-	if err != nil { // It failed
+	if err != nil {
 		stdutil.PrintErr("Error opening list", err)
 		return
 	}
@@ -102,7 +103,7 @@ func main() {
 		// Add add new item to the file
 		jfile, _ := os.Create(dataFile)
 		_, werr := jfile.Write(listdata)
-		if werr != nil { // It failed
+		if werr != nil {
 			stdutil.PrintErr("Failed to write to file", werr)
 			return
 		}
@@ -132,6 +133,23 @@ func main() {
 		newdesc := strings.Join(args[1:], " ")
 		fmt.Println(id)
 		fmt.Println(newdesc)
+	case "clear":
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Println("Clearing your list is permanent. Please confirm your decision. [y/N]:")
+		fmt.Print("> ")
+		text, _ := reader.ReadString('\n')
+		// It returns y\n, remove it so we can compare.
+		if strings.TrimRight(strings.ToLower(text), "\n") == "y" {
+			// Make the file
+			delerr := os.Remove(dataFile)
+			if delerr != nil {
+				stdutil.PrintErr("File deletion failed", delerr)
+				return
+			}
+			fmt.Println("Your list has been cleared.")
+		} else {
+			fmt.Println("Abort.")
+		}
 	case "help":
 		printHelp()
 	default:
