@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"runtime"
 	"strconv"
 	"strings"
 	"os"
@@ -138,9 +139,17 @@ func main() {
 		fmt.Println("Clearing your list is permanent. Please confirm your decision. [y/N]:")
 		fmt.Print("> ")
 		text, _ := reader.ReadString('\n')
+
 		// It returns y\n, remove it so we can compare.
-		if strings.TrimRight(strings.ToLower(text), "\n") == "y" {
-			// Make the file
+		// Of course Windows has to be special.
+		if runtime.GOOS == "windows" {
+			text = strings.TrimRight(text, "\r\n")
+		} else {
+			text = strings.TrimRight(text, "\n")
+		}
+
+		if strings.ToLower(text) == "y" {
+			// Delete the file
 			delerr := os.Remove(dataFile)
 			if delerr != nil {
 				stdutil.PrintErr("File deletion failed", delerr)
