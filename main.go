@@ -24,7 +24,7 @@ type ListItem struct {
 var output []ListItem;
 
 const name = "Xedo"
-const version = "0.1.0"
+const version = "0.2.0"
 const author = "Mnpn"
 
 var xdgDir = xdg.New(author, name)
