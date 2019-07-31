@@ -72,7 +72,7 @@ func main() {
 	// If no argument was provided, check if
 	// a list exists and display it.
 	if len(cmd) == 1 {
-		printList([]string{"test", "of", "my", "thing"}, []string{"how", "nice", "this", "is"})
+		listPrint(output)
 		return
 	}
 
@@ -109,7 +109,7 @@ func main() {
 			return
 		}
 
-		printList([]string{"test", "of", "my", "thing"}, []string{"how", "nice", "this", "is"})
+		listPrint(output)
 	case "remove":
 		if nargs != 1 {
 			argErr("remove <id>")
@@ -165,6 +165,16 @@ func main() {
 		fmt.Println("Unknown argument.\n")
 		printHelp()
 	}
+}
+
+func listPrint(output []ListItem) {
+		headers := make([]string, 0)
+		descriptions := make([]string, 0)
+		for _, item := range output {
+			headers = append(headers, item.Title)
+			descriptions = append(descriptions, item.Description)
+		}
+		printList(headers, descriptions)
 }
 
 func printList(titles []string, descriptions []string) {
