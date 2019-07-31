@@ -161,6 +161,8 @@ func main() {
 		}
 	case "help":
 		printHelp()
+	case "version":
+		fmt.Println(name+" "+version+", running on "+runtime.GOOS+" ("+runtime.GOARCH+").")
 	default:
 		fmt.Println("Unknown argument.\n")
 		printHelp()
