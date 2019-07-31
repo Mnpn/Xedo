@@ -10,6 +10,7 @@ import (
 	"strings"
 	"os"
 
+	"github.com/fatih/color"
 	"github.com/jD91mZM2/gtable"
 	"github.com/jD91mZM2/stdutil"
 	"github.com/OpenPeeDeeP/xdg"
@@ -21,7 +22,6 @@ type ListItem struct {
 }
 
 var output []ListItem;
-
 
 const name = "Xedo"
 const version = "0.1.0"
@@ -88,7 +88,7 @@ func main() {
 
 		if nargs > 2 {
 			fmt.Println("Pro tip! Use \"quotes\" to have several words.\nExample: `"+
-			strings.ToLower(name)+" add \"long title\" \"long description\"`.")
+			strings.ToLower(name)+" add \"long title\" \"long description\"`.\n")
 		}
 
 		d := ""
@@ -178,7 +178,9 @@ func listPrint(output []ListItem) {
 }
 
 func printList(titles []string, descriptions []string) {
+	color.Set(color.FgBlue, color.Bold)
 	fmt.Println("Your Xedo list:")
+	color.Unset()
 	table := gtable.NewStringTable()
 	table.AddStrings("ID", "Title", "Description")
 
