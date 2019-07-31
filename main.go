@@ -196,7 +196,7 @@ func printList(titles []string, descriptions []string) {
 }
 
 func printHelp() {
-	fmt.Println(name+" ("+version+"), the todo list manager by Martin Persson <mnpn03@gmail.com>")
+	fmt.Println(name+" ("+version+"), the todo list manager by Martin Persson <mnpn03@icloud.com>")
 	help := make([]string, 0)
 	help = append(help, "USAGE:")
 	help = append(help, "\tadd \"<title>\" \"[description]\"\tAdd a new entry with an optional description.")
@@ -205,6 +205,7 @@ func printHelp() {
 	help = append(help, "\tmove <id> <up/down/top/bottom>\tMove an entry to a new place.")
 	help = append(help, "\trename <id> <title>\t\tRename an entry's title.")
 	help = append(help, "\trenamedesc <id> <description>\tRename an entry's description.")
+	help = append(help, "\tversion\t\t\t\tPrint the version and OS/arch.")
 
 	fmt.Println(strings.Join(help, "\n"))
 }
