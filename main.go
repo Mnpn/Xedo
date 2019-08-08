@@ -201,7 +201,7 @@ func printList(titles []string, descriptions []string) {
 func printHelp() {
 	fmt.Println(name + " (" + version + "), the todo list manager by " + authorName + " <" + authorEmail + ">")
 	help := make([]string, 0)
-	help = append(help, "USAGE:")
+	help = append(help, "USAGE:") // First \t looks cool and serves absolutely no purpose :sunglasses:
 	help = append(help, "\tadd \"<title>\" \"[description]\"\tAdd a new entry with an optional description.")
 	help = append(help, "\tremove <id>\t\t\tRemove an entry from the list.")
 	help = append(help, "\tclear\t\t\t\tDeletes the whole list permanently.")
