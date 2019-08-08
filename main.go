@@ -26,6 +26,8 @@ var output []ListItem;
 const name = "Xedo"
 const version = "0.2.0"
 const author = "Mnpn"
+const authorName = "Martin Persson"
+const authorEmail = "mnpn03@icloud.com"
 
 var xdgDir = xdg.New(author, name)
 var dataFile = xdgDir.DataHome()+"/list.json"
@@ -35,28 +37,25 @@ func main() {
 
 	// If the folder doesn't exist
 	if _, err := os.Stat(dataFile); os.IsNotExist(err) {
-		// Make the folder
 		derr := os.MkdirAll(xdgDir.DataHome(), 0755) // Needs rwx (7) or else it errors
 		if derr != nil {
 			stdutil.PrintErr("Directory creation failed", derr)
 			return
 		}
 
-		// Make the file
 		cfile, ferr := os.Create(dataFile)
 		if ferr != nil {
 			stdutil.PrintErr("File creation failed", ferr)
 			return
 		}
 
-		// Add basic stuff to the file
+		// Add [] to the file, because JSON
 		_, werr := cfile.Write([]byte("[]"))
 		if werr != nil {
 			stdutil.PrintErr("Failed to write to file", werr)
 		}
 	}
 
-	// Read the contents of the file
 	data, err := ioutil.ReadFile(dataFile)
 	if err != nil {
 		stdutil.PrintErr("Error opening list", err)
@@ -69,8 +68,7 @@ func main() {
 		return
 	}
 
-	// If no argument was provided, check if
-	// a list exists and display it.
+	// We want to display the list if no argument was made.
 	if len(cmd) == 1 {
 		listPrint(output)
 		return
@@ -101,7 +99,6 @@ func main() {
 			return
 		}
 
-		// Add add new item to the file
 		jfile, _ := os.Create(dataFile)
 		_, werr := jfile.Write(listdata)
 		if werr != nil {
@@ -149,7 +146,8 @@ func main() {
 		}
 
 		if strings.ToLower(text) == "y" {
-			// Delete the file
+			// Deleting the file is probably the easiest solution.
+			// It will be re-created on next launch.
 			delerr := os.Remove(dataFile)
 			if delerr != nil {
 				stdutil.PrintErr("File deletion failed", delerr)
@@ -169,6 +167,7 @@ func main() {
 	}
 }
 
+// Turn the ListItem into separated titles/descriptions and printList() those.
 func listPrint(output []ListItem) {
 		headers := make([]string, 0)
 		descriptions := make([]string, 0)
@@ -179,6 +178,8 @@ func listPrint(output []ListItem) {
 		printList(headers, descriptions)
 }
 
+// Print a gTable list. It will make the list look really nice
+// without extra effort.
 func printList(titles []string, descriptions []string) {
 	color.Set(color.FgBlue, color.Bold)
 	fmt.Println("Your Xedo list:")
@@ -196,7 +197,7 @@ func printList(titles []string, descriptions []string) {
 }
 
 func printHelp() {
-	fmt.Println(name+" ("+version+"), the todo list manager by Martin Persson <mnpn03@icloud.com>")
+	fmt.Println(name+" ("+version+"), the todo list manager by "+authorName+" <"+authorEmail+">")
 	help := make([]string, 0)
 	help = append(help, "USAGE:")
 	help = append(help, "\tadd \"<title>\" \"[description]\"\tAdd a new entry with an optional description.")
