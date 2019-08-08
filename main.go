@@ -5,23 +5,23 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"runtime"
 	"strconv"
 	"strings"
-	"os"
 
+	"github.com/OpenPeeDeeP/xdg"
 	"github.com/fatih/color"
 	"github.com/jD91mZM2/gtable"
 	"github.com/jD91mZM2/stdutil"
-	"github.com/OpenPeeDeeP/xdg"
 )
 
 type ListItem struct {
-    Title string
-    Description string
+	Title       string
+	Description string
 }
 
-var output []ListItem;
+var output []ListItem
 
 const name = "Xedo"
 const version = "0.2.0"
@@ -30,7 +30,7 @@ const authorName = "Martin Persson"
 const authorEmail = "mnpn03@icloud.com"
 
 var xdgDir = xdg.New(author, name)
-var dataFile = xdgDir.DataHome()+"/list.json"
+var dataFile = xdgDir.DataHome() + "/list.json"
 
 func main() {
 	cmd := os.Args
@@ -76,7 +76,7 @@ func main() {
 
 	args := cmd[2:]
 	nargs := len(args)
-	
+
 	switch cmd[1] {
 	case "add":
 		if nargs < 1 {
@@ -85,12 +85,14 @@ func main() {
 		}
 
 		if nargs > 2 {
-			fmt.Println("Pro tip! Use \"quotes\" to have several words.\nExample: `"+
-			strings.ToLower(name)+" add \"long title\" \"long description\"`.\n")
+			fmt.Println("Pro tip! Use \"quotes\" to have several words.\nExample: `" +
+				strings.ToLower(name) + " add \"long title\" \"long description\"`.\n")
 		}
 
 		d := ""
-		if len(args) > 1 { d = args[1] }
+		if len(args) > 1 {
+			d = args[1]
+		}
 		output = append(output, ListItem{args[0], d})
 
 		listdata, err := json.Marshal(output)
@@ -160,7 +162,7 @@ func main() {
 	case "help":
 		printHelp()
 	case "version":
-		fmt.Println(name+" "+version+", running on "+runtime.GOOS+" ("+runtime.GOARCH+").")
+		fmt.Println(name + " " + version + ", running on " + runtime.GOOS + " (" + runtime.GOARCH + ").")
 	default:
 		fmt.Println("Unknown argument.\n")
 		printHelp()
@@ -169,13 +171,13 @@ func main() {
 
 // Turn the ListItem into separated titles/descriptions and printList() those.
 func listPrint(output []ListItem) {
-		headers := make([]string, 0)
-		descriptions := make([]string, 0)
-		for _, item := range output {
-			headers = append(headers, item.Title)
-			descriptions = append(descriptions, item.Description)
-		}
-		printList(headers, descriptions)
+	headers := make([]string, 0)
+	descriptions := make([]string, 0)
+	for _, item := range output {
+		headers = append(headers, item.Title)
+		descriptions = append(descriptions, item.Description)
+	}
+	printList(headers, descriptions)
 }
 
 // Print a gTable list. It will make the list look really nice
@@ -197,7 +199,7 @@ func printList(titles []string, descriptions []string) {
 }
 
 func printHelp() {
-	fmt.Println(name+" ("+version+"), the todo list manager by "+authorName+" <"+authorEmail+">")
+	fmt.Println(name + " (" + version + "), the todo list manager by " + authorName + " <" + authorEmail + ">")
 	help := make([]string, 0)
 	help = append(help, "USAGE:")
 	help = append(help, "\tadd \"<title>\" \"[description]\"\tAdd a new entry with an optional description.")
